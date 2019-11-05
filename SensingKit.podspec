@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
   #
 
   s.name         = "SensingKit"
-  s.version      = "0.5.1"
+  s.version      = "0.5.1-orikami"
   s.summary      = "Mobile Sensing Framework."
 
   # This description is used to generate tags and improve search results.
@@ -55,7 +55,7 @@ Pod::Spec.new do |s|
 
   s.author             = { "Kleomenis Katevas"  => 'k.katevas@qmul.ac.uk'}
   s.social_media_url   = "https://twitter.com/SensingKit"
- 
+
 
   # ――― Platform Specifics ――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
   #
