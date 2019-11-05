@@ -42,11 +42,11 @@
     if (self = [super init])
     {
         self.locationManager = [[CLLocationManager alloc] init];
-        
+
         #if !TARGET_IPHONE_SIMULATOR
         self.locationManager.pausesLocationUpdatesAutomatically = NO;
         #endif
-        
+
         self.locationManager.delegate = self;
         self.configuration = configuration;
     }
@@ -59,10 +59,10 @@
 - (void)setConfiguration:(SKConfiguration *)configuration
 {
     super.configuration = configuration;
-    
+
     // Cast the configuration instance
     SKLocationConfiguration *locationConfiguration = (SKLocationConfiguration *)configuration;
-    
+
     // Make the required updates on the sensor
     self.locationManager.distanceFilter = locationConfiguration.distanceFilter;
     [self updateAccuracy:locationConfiguration.locationAccuracy];
@@ -76,29 +76,29 @@
         case SKLocationAccuracyBestForNavigation:
             self.locationManager.desiredAccuracy = kCLLocationAccuracyBestForNavigation;
             break;
-            
+
         case SKLocationAccuracyBest:
             self.locationManager.desiredAccuracy = kCLLocationAccuracyBest;
             break;
-            
+
         case SKLocationAccuracyNearestTenMeters:
             self.locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters;
             break;
-            
+
         case SKLocationAccuracyHundredMeters:
             self.locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters;
             break;
-            
+
         case SKLocationAccuracyKilometer:
             self.locationManager.desiredAccuracy = kCLLocationAccuracyKilometer;
             break;
-            
+
         case SKLocationAccuracyThreeKilometers:
             self.locationManager.desiredAccuracy = kCLLocationAccuracyThreeKilometers;
             break;
-            
+
         // Don't forget to break!
-            
+
         default:
             // Internal Error. Should never happen.
             NSLog(@"Unknown SKLocationAccuracy: %lu", (unsigned long)accuracy);
@@ -114,24 +114,30 @@
             if ([self.locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)]) {
                 [self.locationManager requestWhenInUseAuthorization];
             }
-            
+
             if ([self.locationManager respondsToSelector:@selector(setAllowsBackgroundLocationUpdates:)]) {
-                self.locationManager.allowsBackgroundLocationUpdates = NO;
+                // Orikami edit: `whenInUse` allows you to continue tracking in background, when the
+                // application starts tracking when the app is in the foreground.
+                // This is less permissive than alwaysInUse (i.e. also start in background),
+                // but more permissive than whenInUse without background tracking (i.e. only in foreground)
+                //
+                // See: https://developer.apple.com/videos/play/wwdc2019/705/ at 13:00-14:30 min for more info
+                self.locationManager.allowsBackgroundLocationUpdates = YES;
             }
             break;
-            
+
         case SKLocationAuthorizationAlways:
             if ([self.locationManager respondsToSelector:@selector(requestAlwaysAuthorization)]) {
                 [self.locationManager requestAlwaysAuthorization];
             }
-            
+
             if ([self.locationManager respondsToSelector:@selector(setAllowsBackgroundLocationUpdates:)]) {
                 self.locationManager.allowsBackgroundLocationUpdates = YES;
             }
             break;
-            
+
         // Don't forget to break!
-            
+
         default:
             // Internal Error. Should never happen.
             NSLog(@"Unknown SKLocationAuthorization: %lu", (unsigned long)authorization);
@@ -152,31 +158,31 @@
     if (![super startSensing:error]) {
         return NO;
     }
-    
+
     if (![SKLocation isSensorAvailable])
     {
         if (error) {
-            
+
             NSDictionary *userInfo = @{
                                        NSLocalizedDescriptionKey: NSLocalizedString(@"Location sensor is not available.", nil),
                                        };
-            
+
             *error = [NSError errorWithDomain:SKErrorDomain
                                          code:SKSensorNotAvailableError
                                      userInfo:userInfo];
         }
         return NO;
     }
-    
+
     [self.locationManager startUpdatingLocation];
-    
+
     return YES;
 }
 
 - (BOOL)stopSensing:(NSError **)error
 {
     [self.locationManager stopUpdatingLocation];
-    
+
     return [super stopSensing:error];
 }
 
@@ -185,7 +191,7 @@
     for (CLLocation *location in locations)
     {
         SKLocationData *data = [[SKLocationData alloc] initWithLocation:location];
-        
+
         [self submitSensorData:data error:NULL];
     }
 }
