@@ -20,5 +20,16 @@
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>NSPrincipalClass</key>
 	<string></string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Please enable location services to allow the app to track</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Please enable location services to allow the app to track in the background</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Please enable location services to allow the app to track in the background</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+		<string>location</string>
+	</array>
 </dict>
 </plist>
